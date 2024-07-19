@@ -1,0 +1,8 @@
+[package]
+name = "rustOpenGL"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+glad = "0.0.0"
+glfw = "0.57.0"
