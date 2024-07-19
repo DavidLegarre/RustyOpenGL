@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+gl = "0.14.0"
 glad = "0.0.0"
 glfw = "0.57.0"
