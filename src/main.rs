@@ -1,3 +1,6 @@
+extern crate gl;
+extern crate glfw;
+
 use glfw::{fail_on_errors, Action, Context, Key};
 
 const WINDOW_TITLE: &str = "Hello, Window!";
@@ -5,7 +8,7 @@ const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGHT: u32 = 600;
 
 fn main() {
-    let vertices: [f32; 9] = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
+    //let vertices: [f32; 9] = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
 
     let (mut glfw, mut window, events) = init_window();
 
@@ -46,6 +49,12 @@ fn init_window() -> (
     window.make_current();
     window.set_key_polling(true);
     window.set_framebuffer_size_polling(true);
+
+    // Set the framebuffer size callback
+    window.set_framebuffer_size_callback(|window, width, height| unsafe {
+        let _window = window;
+        gl::Viewport(0, 0, width, height);
+    });
 
     (glfw, window, events)
 }
