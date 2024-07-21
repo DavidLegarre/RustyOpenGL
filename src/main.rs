@@ -1,6 +1,8 @@
 extern crate gl;
 extern crate glfw;
 
+use gl::types::*;
+
 use glfw::{fail_on_errors, Action, Context, Key};
 
 const WINDOW_TITLE: &str = "Hello, Window!";
@@ -8,12 +10,36 @@ const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGHT: u32 = 600;
 
 fn main() {
-    //let vertices: [f32; 9] = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
+    let vertices: Vec<f32> = vec![-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
 
     let (mut glfw, mut window, events) = init_window();
 
     while !window.should_close() {
         process_events(&mut glfw, &mut window, &events);
+
+        let mut vbo: GLuint = 0;
+        unsafe {
+            check_gl_error(); // Check before GenBuffers
+            gl::GenBuffers(1, &mut vbo);
+            check_gl_error(); // Check after GenBuffers
+
+            check_gl_error(); // Check before BindBuffer
+            gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
+            check_gl_error(); // Check after BindBuffer
+
+            check_gl_error(); // Check before BufferData
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (vertices.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr,
+                vertices.as_ptr() as *const gl::types::GLvoid,
+                gl::STATIC_DRAW,
+            );
+            check_gl_error(); // Check after BufferData
+
+            check_gl_error(); // Check before unbinding buffer
+            gl::BindBuffer(gl::ARRAY_BUFFER, 0);
+            check_gl_error(); // Check after unbinding buffer
+        }
     }
 }
 
@@ -76,6 +102,31 @@ fn process_events(
                 window.set_should_close(true)
             }
             _ => {}
+        }
+    }
+}
+
+fn check_gl_error() {
+    let mut error_code: GLenum;
+    unsafe {
+        loop {
+            error_code = gl::GetError();
+            if error_code == gl::NO_ERROR {
+                break;
+            }
+
+            let error_str = match error_code {
+                gl::INVALID_ENUM => "GL_INVALID_ENUM",
+                gl::INVALID_VALUE => "GL_INVALID_VALUE",
+                gl::INVALID_OPERATION => "GL_INVALID_OPERATION",
+                gl::STACK_OVERFLOW => "GL_STACK_OVERFLOW",
+                gl::STACK_UNDERFLOW => "GL_STACK_UNDERFLOW",
+                gl::OUT_OF_MEMORY => "GL_OUT_OF_MEMORY",
+                gl::INVALID_FRAMEBUFFER_OPERATION => "GL_INVALID_FRAMEBUFFER_OPERATION",
+                _ => "Unknown error",
+            };
+
+            println!("OpenGL Error: {} ({})", error_str, error_code);
         }
     }
 }
