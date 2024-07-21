@@ -21,6 +21,7 @@ pub unsafe fn glCheckError_(file: &str, line: u32) -> u32 {
     error_code
 }
 
+#[macro_export]
 macro_rules! gl_check_error {
     () => {
         glCheckError_(file!(), line!())
