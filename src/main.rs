@@ -1,9 +1,7 @@
 extern crate glfw;
-use self::glfw::{Action, Context, Key};
+use glfw::{fail_on_errors, Action, Context, GlfwReceiver, Key};
 
 extern crate gl;
-
-use std::sync::mpsc::Receiver;
 
 // settings
 const SCR_WIDTH: u32 = 800;
@@ -12,7 +10,7 @@ const SCR_HEIGHT: u32 = 600;
 pub fn main() {
     // glfw: initialize and configure
     // ------------------------------
-    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+    let mut glfw = glfw::init(glfw::fail_on_errors!()).unwrap();
     glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(
         glfw::OpenGlProfileHint::Core,
@@ -53,8 +51,7 @@ pub fn main() {
     }
 }
 
-// NOTE: not the same version as in common.rs!
-fn process_events(window: &mut glfw::Window, events: &Receiver<(f64, glfw::WindowEvent)>) {
+fn process_events(window: &mut glfw::Window, events: &GlfwReceiver<(f64, glfw::WindowEvent)>) {
     for (_, event) in glfw::flush_messages(events) {
         match event {
             glfw::WindowEvent::FramebufferSize(width, height) => {
