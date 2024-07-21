@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+cgmath = "0.18.0"
 gl = "0.14.0"
 glad = "0.0.0"
 glfw = "0.57.0"
 glutin = "0.32.0"
+image = "0.25.2"
