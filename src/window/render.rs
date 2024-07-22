@@ -32,7 +32,7 @@ const INDICES: [i32; 6] = [
     0, 1, 3, // first triangle
     1, 2, 3, // second triangle
 ];
-pub unsafe fn render_triangle() -> (u32, u32) {
+pub unsafe fn render_triangle(vertices: &[f32; 9]) -> (u32, u32) {
     // Rendering logic for a triangle
 
     // Build and compile vertex shader
@@ -47,10 +47,11 @@ pub unsafe fn render_triangle() -> (u32, u32) {
 
     // Add EBO
 
-    let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
+    // let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
+    let (mut VBO, mut VAO) = (0, 0);
     gl::GenVertexArrays(1, &mut VAO);
     gl::GenBuffers(1, &mut VBO);
-    gl::GenBuffers(1, &mut EBO);
+    // gl::GenBuffers(1, &mut EBO);
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     gl::BindVertexArray(VAO);
@@ -58,17 +59,17 @@ pub unsafe fn render_triangle() -> (u32, u32) {
     gl::BindBuffer(gl::ARRAY_BUFFER, VBO);
     gl::BufferData(
         gl::ARRAY_BUFFER,
-        (VERTICES.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-        &VERTICES[0] as *const f32 as *const c_void,
+        (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+        &vertices[0] as *const f32 as *const c_void,
         gl::STATIC_DRAW,
     );
-    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, EBO);
-    gl::BufferData(
-        gl::ELEMENT_ARRAY_BUFFER,
-        (INDICES.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-        &INDICES[0] as *const i32 as *const c_void,
-        gl::STATIC_DRAW,
-    );
+    // gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, EBO);
+    // gl::BufferData(
+    //     gl::ELEMENT_ARRAY_BUFFER,
+    //     (INDICES.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+    //     &INDICES[0] as *const i32 as *const c_void,
+    //     gl::STATIC_DRAW,
+    // );
 
     gl::VertexAttribPointer(
         0,

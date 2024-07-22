@@ -20,19 +20,33 @@ pub unsafe fn rendering_loop(
         gl::ClearColor(0., 0., 0., 1.0);
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
-        let (shader_program, VAO) = render_triangle();
+        let triangle_1: [f32; 9] = [0.5, 0.1, 0.0, 1.0, 0.0, 0.0, 0.1, 0.5, 0.0];
+        let (shader_program, VAO) = render_triangle(&triangle_1);
 
         gl::UseProgram(shader_program);
         gl::BindVertexArray(VAO);
         // Wireframe mode
-        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
-        gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
+        // gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+        // gl::DrawElements(gl::TRIANGLES, 3, gl::UNSIGNED_INT, ptr::null());
+        gl::DrawArrays(gl::TRIANGLES, 0, 3);
+
+        let triangle_2: [f32; 9] = [
+            0.1, -0.5, 0.,
+            0.70, 0.2, 0.,
+            0., 0.8, 0.
+        ];
+        let (shader_program, VAO) = render_triangle(&triangle_2);
+
+        gl::UseProgram(shader_program);
+        gl::BindVertexArray(VAO);
+        // Wireframe mode
+        // gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+        gl::DrawArrays(gl::TRIANGLES, 0, 3);
 
         window.swap_buffers();
 
         glfw.poll_events();
     }
-
 }
 
 pub fn init_window(
