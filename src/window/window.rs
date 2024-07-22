@@ -24,12 +24,15 @@ pub unsafe fn rendering_loop(
 
         gl::UseProgram(shader_program);
         gl::BindVertexArray(VAO);
+        // Wireframe mode
+        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
         gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
 
         window.swap_buffers();
 
         glfw.poll_events();
     }
+
 }
 
 pub fn init_window(

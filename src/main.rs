@@ -13,5 +13,6 @@ fn main() {
     let (glfw, window, events) = init_window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
     unsafe {
         rendering_loop(window, glfw, events);
+        glfw::ffi::glfwTerminate();
     }
 }
