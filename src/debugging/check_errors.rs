@@ -1,6 +1,4 @@
-#![allow(non_snake_case)]
-
-pub unsafe fn glCheckError_(file: &str, line: u32) -> u32 {
+pub unsafe fn gl_check_error(file: &str, line: u32) -> u32 {
     let mut error_code = gl::GetError();
     while error_code != gl::NO_ERROR {
         let error = match error_code {
@@ -23,7 +21,8 @@ pub unsafe fn glCheckError_(file: &str, line: u32) -> u32 {
 
 #[macro_export]
 macro_rules! gl_check_error {
-    () => {
-        glCheckError_(file!(), line!())
-    };
+    () => (
+        gl_check_error(file!(), line!())
+    )
 }
+
