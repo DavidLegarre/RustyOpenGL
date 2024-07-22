@@ -1,5 +1,7 @@
 #![allow(non_snake_case)]
 
+use std::ptr;
+
 use crate::debugging::check_errors::gl_check_error;
 use glfw::fail_on_errors;
 
@@ -14,13 +16,18 @@ pub unsafe fn rendering_loop(
     while !window.should_close() {
         process_events(&mut window, &events);
         crate::gl_check_error!();
-        gl::ClearColor(0.2, 0.3, 0.3, 1.0);
+
+        gl::ClearColor(0., 0., 0., 1.0);
         gl::Clear(gl::COLOR_BUFFER_BIT);
+
         let (shader_program, VAO) = render_triangle();
+
         gl::UseProgram(shader_program);
         gl::BindVertexArray(VAO);
-        gl::DrawArrays(gl::TRIANGLES, 0, 3);
+        gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
+
         window.swap_buffers();
+
         glfw.poll_events();
     }
 }
