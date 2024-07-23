@@ -1042,6 +1042,7 @@ dependencies = [
  "glfw",
  "glutin",
  "image",
+ "rand",
 ]
 
 [[package]]
