@@ -25,8 +25,9 @@ pub unsafe fn rendering_loop(
         gl::UseProgram(shader_program);
         gl::BindVertexArray(VAO);
         // Wireframe mode
-        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
-        gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
+        // gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+        // gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
+        gl::DrawArrays(gl::TRIANGLES, 0, 6);
 
         window.swap_buffers();
 

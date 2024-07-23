@@ -5,11 +5,13 @@ use std::{mem, ptr, str};
 
 use gl::types::*;
 
-const VERTICES: [f32; 12] = [
-    0.5, 0.5, 0.0, // top right
-    0.5, -0.5, 0.0, // bottom right
-    -0.5, -0.5, 0.0, // bottom left
-    -0.5, 0.5, 0.0, // top left
+const VERTICES: [f32; 18] = [
+    -0.9, -0.5, 0.0, // let
+    -0.0, -0.5, 0.0, // right
+    -0.45, 0.5, 0.0, // top
+    0.0, -0.5, 0.0, // let
+    0.9, -0.5, 0.0, // right
+    0.45, 0.5, 0.0, // top
 ];
 
 const VERTEX_SHADER_SOURCE: &str = r#"
@@ -28,29 +30,19 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"
     }
 "#;
 
-const INDICES: [i32; 6] = [
-    0, 1, 3, // first triangle
-    1, 2, 3, // second triangle
-];
 pub unsafe fn render_triangle() -> (u32, u32) {
-    // Rendering logic for a triangle
-
     // Build and compile vertex shader
     let vertex_shader = build_compile_shader(VERTEX_SHADER_SOURCE, gl::VERTEX_SHADER);
-
     // fragment shader
     let fragment_shader = build_compile_shader(FRAGMENT_SHADER_SOURCE, gl::FRAGMENT_SHADER);
-
     // link shaders
     let shaders = [vertex_shader, fragment_shader];
     let shader_program = build_shader_program(&shaders);
 
     // Add EBO
-
-    let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
+    let (mut VBO, mut VAO) = (0, 0);
     gl::GenVertexArrays(1, &mut VAO);
     gl::GenBuffers(1, &mut VBO);
-    gl::GenBuffers(1, &mut EBO);
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     gl::BindVertexArray(VAO);
@@ -60,13 +52,6 @@ pub unsafe fn render_triangle() -> (u32, u32) {
         gl::ARRAY_BUFFER,
         (VERTICES.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
         &VERTICES[0] as *const f32 as *const c_void,
-        gl::STATIC_DRAW,
-    );
-    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, EBO);
-    gl::BufferData(
-        gl::ELEMENT_ARRAY_BUFFER,
-        (INDICES.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-        &INDICES[0] as *const i32 as *const c_void,
         gl::STATIC_DRAW,
     );
 
