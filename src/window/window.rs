@@ -33,7 +33,6 @@ pub unsafe fn rendering_loop(
 
         glfw.poll_events();
     }
-
 }
 
 pub fn init_window(
@@ -72,7 +71,8 @@ pub fn init_window(
 
 fn init_glfw() -> glfw::Glfw {
     let mut glfw = glfw::init(fail_on_errors!()).unwrap();
-    glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
+    glfw.window_hint(glfw::WindowHint::ContextVersion(4, 5));
+
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(
         glfw::OpenGlProfileHint::Core,
     ));
