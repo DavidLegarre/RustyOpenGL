@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use super::render::render_triangle;
+use super::render::get_triangle_array;
 use crate::glfw::Context;
 use crate::{debugging::check_errors::gl_check_error, window::render::compile_triangle_shaders};
 use glfw::fail_on_errors;
@@ -22,29 +22,34 @@ pub unsafe fn rendering_loop(
     mut glfw: glfw::Glfw,
     events: glfw::GlfwReceiver<(f64, glfw::WindowEvent)>,
 ) {
+    // Wireframe mode
+    gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+
     while !window.should_close() {
         process_events(&mut window, &events);
-        crate::gl_check_error!();
-
-        gl::ClearColor(0., 0., 0., 1.0);
-        gl::Clear(gl::COLOR_BUFFER_BIT);
+        clear_screen();
 
         let shader_program = compile_triangle_shaders();
-        let VAO = render_triangle(&VERTICES_1);
         gl::UseProgram(shader_program);
-        gl::BindVertexArray(VAO);
-        gl::DrawArrays(gl::TRIANGLES, 0, 3);
-        // Wireframe mode
-        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
 
-        let VAO = render_triangle(&VERTICES_2);
-        // gl::UseProgram(shader_program);
-        gl::BindVertexArray(VAO);
-        gl::DrawArrays(gl::TRIANGLES, 0, 6);
+        draw_triangle(&VERTICES_1);
+        draw_triangle(&VERTICES_2);
+
         window.swap_buffers();
 
         glfw.poll_events();
     }
+}
+
+unsafe fn clear_screen() {
+    gl::ClearColor(0., 0., 0., 1.0);
+    gl::Clear(gl::COLOR_BUFFER_BIT);
+}
+
+unsafe fn draw_triangle(vertices: &[f32]) {
+    let VAO = get_triangle_array(vertices);
+    gl::BindVertexArray(VAO);
+    gl::DrawArrays(gl::TRIANGLES, 0, 3);
 }
 
 pub fn init_window(
@@ -105,5 +110,8 @@ fn process_events(
             }
             _ => {}
         }
+    }
+    unsafe {
+        crate::gl_check_error!();
     }
 }

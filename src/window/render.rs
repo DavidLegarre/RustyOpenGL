@@ -22,7 +22,7 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"
 "#;
 
 
-pub unsafe fn render_triangle(vertices: &[f32]) -> u32 {
+pub unsafe fn get_triangle_array(vertices: &[f32]) -> u32 {
     let _ = vertices;
     // Compile and link the shaders
     // Generate and store the vertices in VBO and VAO
