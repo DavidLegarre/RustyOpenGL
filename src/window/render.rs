@@ -5,7 +5,7 @@ use std::{mem, ptr, str};
 
 use gl::types::*;
 
-const VERTEX_SHADER_SOURCE: &str = r#"
+pub const VERTEX_SHADER_SOURCE: &str = r#"
     #version 450 core
     layout (location = 0) in vec3 aPos;
     void main() {
@@ -13,7 +13,7 @@ const VERTEX_SHADER_SOURCE: &str = r#"
     }
 "#;
 
-const FRAGMENT_SHADER_SOURCE: &str = r#"
+pub const PINK_FRAGMENT_SHADER: &str = r#"
     #version 450 core
     out vec4 FragColor;
     void main() {
@@ -21,6 +21,13 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"
     }
 "#;
 
+pub const YELLOW_FRAGMENT_SHADER: &str = r#"
+    #version 450 core
+    out vec4 FragColor;
+    void main() {
+       FragColor = vec4(1.0f, 0.984f, 0.f, 1.0f);
+    }
+"#;
 
 pub unsafe fn get_triangle_array(vertices: &[f32]) -> u32 {
     let _ = vertices;
@@ -31,19 +38,19 @@ pub unsafe fn get_triangle_array(vertices: &[f32]) -> u32 {
     VAO
 }
 
-pub unsafe fn compile_triangle_shaders() -> u32 {
+pub unsafe fn compile_triangle_shaders(vertex_shader: &str, fragment_shader: &str) {
     // Compiles the vertex and fragment shaders and links them together in a shader program
 
     // Build and compile vertex shader
-    let vertex_shader = build_compile_shader(VERTEX_SHADER_SOURCE, gl::VERTEX_SHADER);
+    let vertex_shader = build_compile_shader(vertex_shader, gl::VERTEX_SHADER);
     // fragment shader
-    let fragment_shader = build_compile_shader(FRAGMENT_SHADER_SOURCE, gl::FRAGMENT_SHADER);
+    let fragment_shader = build_compile_shader(fragment_shader, gl::FRAGMENT_SHADER);
 
     // link shaders together in a sahder program
     let shaders = [vertex_shader, fragment_shader];
     let shader_program = build_shader_program(&shaders);
 
-    shader_program
+    gl::UseProgram(shader_program);
 }
 
 unsafe fn build_objects(vertices: &[f32]) -> u32 {

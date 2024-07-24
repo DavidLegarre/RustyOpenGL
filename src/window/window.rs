@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 
-use super::render::get_triangle_array;
+use super::render::{
+    get_triangle_array, PINK_FRAGMENT_SHADER, VERTEX_SHADER_SOURCE, YELLOW_FRAGMENT_SHADER,
+};
 use crate::glfw::Context;
 use crate::{debugging::check_errors::gl_check_error, window::render::compile_triangle_shaders};
 use glfw::fail_on_errors;
@@ -68,16 +70,15 @@ pub unsafe fn rendering_loop(
     events: glfw::GlfwReceiver<(f64, glfw::WindowEvent)>,
 ) {
     // Wireframe mode
-    gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+    // gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
 
     while !window.should_close() {
         process_events(&mut window, &events);
         clear_screen();
 
-        let shader_program = compile_triangle_shaders();
-        gl::UseProgram(shader_program);
-
+        compile_triangle_shaders(VERTEX_SHADER_SOURCE, PINK_FRAGMENT_SHADER);
         draw_triangle(&VERTICES_1);
+        compile_triangle_shaders(VERTEX_SHADER_SOURCE, YELLOW_FRAGMENT_SHADER);
         draw_triangle(&VERTICES_2);
 
         window.swap_buffers();
