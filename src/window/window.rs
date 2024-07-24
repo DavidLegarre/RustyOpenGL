@@ -17,41 +17,6 @@ const VERTICES_2: [f32; 9] = [
     0.45, 0.5, 0.0, // top
 ];
 
-pub unsafe fn rendering_loop(
-    mut window: glfw::PWindow,
-    mut glfw: glfw::Glfw,
-    events: glfw::GlfwReceiver<(f64, glfw::WindowEvent)>,
-) {
-    // Wireframe mode
-    gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
-
-    while !window.should_close() {
-        process_events(&mut window, &events);
-        clear_screen();
-
-        let shader_program = compile_triangle_shaders();
-        gl::UseProgram(shader_program);
-
-        draw_triangle(&VERTICES_1);
-        draw_triangle(&VERTICES_2);
-
-        window.swap_buffers();
-
-        glfw.poll_events();
-    }
-}
-
-unsafe fn clear_screen() {
-    gl::ClearColor(0., 0., 0., 1.0);
-    gl::Clear(gl::COLOR_BUFFER_BIT);
-}
-
-unsafe fn draw_triangle(vertices: &[f32]) {
-    let VAO = get_triangle_array(vertices);
-    gl::BindVertexArray(VAO);
-    gl::DrawArrays(gl::TRIANGLES, 0, 3);
-}
-
 pub fn init_window(
     width: u32,
     height: u32,
@@ -85,7 +50,6 @@ pub fn init_window(
 
     (glfw, window, events)
 }
-
 fn init_glfw() -> glfw::Glfw {
     let mut glfw = glfw::init(fail_on_errors!()).unwrap();
     glfw.window_hint(glfw::WindowHint::ContextVersion(4, 5));
@@ -96,6 +60,30 @@ fn init_glfw() -> glfw::Glfw {
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
 
     glfw
+}
+
+pub unsafe fn rendering_loop(
+    mut window: glfw::PWindow,
+    mut glfw: glfw::Glfw,
+    events: glfw::GlfwReceiver<(f64, glfw::WindowEvent)>,
+) {
+    // Wireframe mode
+    gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+
+    while !window.should_close() {
+        process_events(&mut window, &events);
+        clear_screen();
+
+        let shader_program = compile_triangle_shaders();
+        gl::UseProgram(shader_program);
+
+        draw_triangle(&VERTICES_1);
+        draw_triangle(&VERTICES_2);
+
+        window.swap_buffers();
+
+        glfw.poll_events();
+    }
 }
 
 fn process_events(
@@ -114,4 +102,15 @@ fn process_events(
     unsafe {
         crate::gl_check_error!();
     }
+}
+
+unsafe fn clear_screen() {
+    gl::ClearColor(0., 0., 0., 1.0);
+    gl::Clear(gl::COLOR_BUFFER_BIT);
+}
+
+unsafe fn draw_triangle(vertices: &[f32]) {
+    let VAO = get_triangle_array(vertices);
+    gl::BindVertexArray(VAO);
+    gl::DrawArrays(gl::TRIANGLES, 0, 3);
 }
