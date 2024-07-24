@@ -5,15 +5,6 @@ use std::{mem, ptr, str};
 
 use gl::types::*;
 
-const VERTICES: [f32; 18] = [
-    -0.9, -0.5, 0.0, // let
-    -0.0, -0.5, 0.0, // right
-    -0.45, 0.5, 0.0, // top
-    0.0, -0.5, 0.0, // let
-    0.9, -0.5, 0.0, // right
-    0.45, 0.5, 0.0, // top
-];
-
 const VERTEX_SHADER_SOURCE: &str = r#"
     #version 330 core
     layout (location = 0) in vec3 aPos;
@@ -30,31 +21,48 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"
     }
 "#;
 
-pub unsafe fn render_triangle() -> (u32, u32) {
+
+pub unsafe fn render_triangle(vertices: &[f32]) -> u32 {
+    let _ = vertices;
+    // Compile and link the shaders
+    // Generate and store the vertices in VBO and VAO
+    let VAO = build_objects(vertices);
+    // Return the shader program
+    VAO
+}
+
+pub unsafe fn compile_triangle_shaders() -> u32 {
+    // Compiles the vertex and fragment shaders and links them together in a shader program
+
     // Build and compile vertex shader
     let vertex_shader = build_compile_shader(VERTEX_SHADER_SOURCE, gl::VERTEX_SHADER);
     // fragment shader
     let fragment_shader = build_compile_shader(FRAGMENT_SHADER_SOURCE, gl::FRAGMENT_SHADER);
-    // link shaders
+
+    // link shaders together in a sahder program
     let shaders = [vertex_shader, fragment_shader];
     let shader_program = build_shader_program(&shaders);
 
-    // Add EBO
+    shader_program
+}
+
+unsafe fn build_objects(vertices: &[f32]) -> u32 {
     let (mut VBO, mut VAO) = (0, 0);
-    gl::GenVertexArrays(1, &mut VAO);
+
+    // Load vertex buffer object (VBO) (the array with vertex info)
     gl::GenBuffers(1, &mut VBO);
-
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    gl::BindVertexArray(VAO);
-
     gl::BindBuffer(gl::ARRAY_BUFFER, VBO);
     gl::BufferData(
         gl::ARRAY_BUFFER,
-        (VERTICES.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-        &VERTICES[0] as *const f32 as *const c_void,
+        (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+        &vertices[0] as *const f32 as *const c_void,
         gl::STATIC_DRAW,
     );
 
+    // Load vertex array object (VAO)
+    // An array that tells opengl how to use, read and render the vertexes stored in the VBO
+    gl::GenVertexArrays(1, &mut VAO);
+    gl::BindVertexArray(VAO);
     gl::VertexAttribPointer(
         0,
         3,
@@ -65,10 +73,7 @@ pub unsafe fn render_triangle() -> (u32, u32) {
     );
     gl::EnableVertexAttribArray(0);
 
-    gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-    gl::BindVertexArray(0);
-
-    (shader_program, VAO)
+    VAO
 }
 
 unsafe fn build_compile_shader(shader_source: &str, shader_type: GLenum) -> u32 {
