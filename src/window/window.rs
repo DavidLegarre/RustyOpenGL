@@ -35,8 +35,7 @@ pub unsafe fn rendering_loop(
         gl::BindVertexArray(VAO);
         gl::DrawArrays(gl::TRIANGLES, 0, 3);
         // Wireframe mode
-        // gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
-        // gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
+        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
 
         let VAO = render_triangle(&VERTICES_2);
         // gl::UseProgram(shader_program);
