@@ -1,22 +1,18 @@
 #![allow(non_snake_case)]
 
+use std::ffi::CString;
+
 use super::render::{
-    get_triangle_array, PINK_FRAGMENT_SHADER, VERTEX_SHADER_SOURCE, YELLOW_FRAGMENT_SHADER,
+    get_triangle_array, PINK_FRAGMENT_SHADER, VERTEX_SHADER_SOURCE,
 };
 use crate::glfw::Context;
 use crate::{debugging::check_errors::gl_check_error, window::render::compile_triangle_shaders};
 use glfw::fail_on_errors;
 
 const VERTICES_1: [f32; 9] = [
-    -0.9, -0.5, 0.0, // let
-    -0.0, -0.5, 0.0, // right
-    -0.45, 0.5, 0.0, // top
-];
-
-const VERTICES_2: [f32; 9] = [
-    0.0, -0.5, 0.0, // let
-    0.9, -0.5, 0.0, // right
-    0.45, 0.5, 0.0, // top
+    0.5, -0.5, 0.0, // bottom right
+    -0.5, -0.5, 0.0, // bottom let
+    0.0, 0.5, 0.0, // top
 ];
 
 pub fn init_window(
@@ -76,10 +72,16 @@ pub unsafe fn rendering_loop(
         process_events(&mut window, &events);
         clear_screen();
 
-        compile_triangle_shaders(VERTEX_SHADER_SOURCE, PINK_FRAGMENT_SHADER);
+        let shaderProgram = compile_triangle_shaders(VERTEX_SHADER_SOURCE, PINK_FRAGMENT_SHADER);
+        let timeValue = glfw.get_time();
+        let greenValue: f32 = ((timeValue.sin() / 2.0) + 0.5) as f32;
+        let redValue: f32 = ((timeValue.cos() / 2.0) + 0.5) as f32;
+        let blueValue: f32 = ((timeValue.sin() / 1.0) + 0.5) as f32;
+        let uniformName = CString::new("ourColor").unwrap();
+        let vertexColorLocation = gl::GetUniformLocation(shaderProgram, uniformName.as_ptr());
+        gl::UseProgram(shaderProgram);
+        gl::Uniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0);
         draw_triangle(&VERTICES_1);
-        compile_triangle_shaders(VERTEX_SHADER_SOURCE, YELLOW_FRAGMENT_SHADER);
-        draw_triangle(&VERTICES_2);
 
         window.swap_buffers();
 
